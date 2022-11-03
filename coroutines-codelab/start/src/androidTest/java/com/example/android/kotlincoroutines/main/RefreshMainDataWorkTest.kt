@@ -16,15 +16,31 @@
 
 package com.example.android.kotlincoroutines.main
 
+import androidx.test.core.app.ApplicationProvider
+import androidx.work.testing.TestListenableWorkerBuilder
+import com.example.android.kotlincoroutines.fakes.MainNetworkFake
+import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runner.manipulation.Ordering.Context
 import org.junit.runners.JUnit4
+
 
 @RunWith(JUnit4::class)
 class RefreshMainDataWorkTest {
 
     @Test
     fun testRefreshMainDataWork() {
-        // TODO: Write this test
+        val fakeNetwork = MainNetworkFake("OK")
+        val context = ApplicationProvider.getApplicationContext<android.content.Context>()
+        val worker = TestListenableWorkerBuilder<RefreshMainDataWork>(context)
+            .setWorkerFactory(RefreshMainDataWork.Factory(fakeNetwork))
+            .build()
+
+        // start asynchronously
+        val result = worker.startWork().get()
+        assertThat(result).isEqualTo(androidx.work.ListenableWorker.Result.success())
+
+
     }
 }
